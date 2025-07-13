@@ -21,12 +21,12 @@
 ## macOS
 1. Install homebrew if you haven't already
 
-'/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 
 2. Install javascript
 
-'pip install javascript'
+`pip install javascript`
 
 3. Install nodejs and npm
 
-'npm install mineflayer' 
+`npm install mineflayer` 
