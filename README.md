@@ -29,4 +29,8 @@
 
 3. Install nodejs and npm
 
+`brew install node`
+
+4. Install mineflayer package
+
 `npm install mineflayer` 
