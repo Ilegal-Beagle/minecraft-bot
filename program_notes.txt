@@ -1,0 +1,52 @@
+
+Min Goal:
+	- read chat and respond in chat
+	- read and reply in mc chat
+	- obey direct commands from discord and mc chat
+	- do functions listed in mc client section
+
+Desired goal:
+	min goal+
+	- voice chat compatibility
+	- basic game ai
+
+Ambitious:
+	desired goal+
+	- autonomous ai
+
+
+Minecraft Discord Bot
+
+	Discord Bot
+
+		join vc
+		text to speech
+			play audio in vc
+		speech to text
+			record vc audio
+		insult gavin with yo mama jokes
+
+		listen keyword for voice chats and in text chats
+
+	Minecraft Client
+
+		join a world LAN
+		join a server
+		do stuff
+			kill a mob
+			follow player
+			talk in chat
+			fish
+			store stuff in chests
+			mine a tree
+			make a dirt hut
+
+	AI (attempt)		
+		
+		ai switch (from manual to ai)
+		*can use a pretrained model*
+		
+		minecraft interface
+			call functions used in manual mode in the mc client section
+		
+		know when to reply to messages in mc and in discord
