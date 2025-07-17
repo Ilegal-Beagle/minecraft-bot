@@ -23,9 +23,11 @@
 
 `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 
-2. Install javascript
+2. Install python modules
 
 `pip install javascript`
+`pip install discord`
+`pip install python-dotenv`
 
 3. Install nodejs and npm
 
@@ -34,3 +36,4 @@
 4. Install mineflayer package
 
 `npm install mineflayer` 
+
