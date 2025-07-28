@@ -27,7 +27,6 @@ def handle(*args):
 
     @On(bot, 'chat')
     def handleMsg(this, sender, message, *args):
-        # TODO: remove repetition
         if sender and (sender != BOT_USERNAME):
 
             if 'come' in message:
@@ -40,10 +39,7 @@ def handle(*args):
 
                 pos = target.position
                 bot.pathfinder.setMovements(movements)
-                bot.pathfinder.setGoal(pathfinder.goals.GoalNear(pos.x, pos.y, pos.z, RANGE_GOAL))
-
-            elif 'test' in message:
-                bot.chat(f'i am in {bot.game.dimension}')
+                go_to(pos)
 
             elif 'go to entity' in message:
                 entity = bot.nearestEntity()
@@ -61,53 +57,60 @@ def handle(*args):
                 bot.lookAt(sender_pos.offset(0, 1, 0))
 
             elif 'look for new tree' in message:
-                blocks = bot.findBlocks(
-                    {
-                        'point':bot.position,
-                        'matching':lambda block: block.name != 'air',
-                        'count':2048 + 2048
-                    })
-                
-                blocks = [bot.blockAt(pos) for pos in blocks if 'log' in bot.blockAt(pos).name]
-                
-                if blocks:
-                    pos = blocks[0]
-                    bot.pathfinder.setGoal(
-                        pathfinder.goals.GoalNear(pos.x, pos.y, pos.z, RANGE_GOAL))
-                else:
-                    bot.chat('ion see any doggone trees \'round these parts')
+                go_to_nearest_log()
 
             elif 'l' in message:
-                print(bot['position'])
-                blocks = bot.findBlocks(
-                    {
-                        'point':bot.position,
-                        'matching':lambda block: block.name != 'air',
-                        'count':512
-                    })
-                
-                blocks = [bot.blockAt(pos) for pos in blocks if 'log' in bot.blockAt(pos).name]
-                
-                if blocks:
-                    for block in blocks:
-                        print(f'{block.name}, {block.position}')
-
-                    for block in blocks:
-                        if bot.canDigBlock(block):
-                            bot.dig(block,True)
-                            print(block.position)
-                        else:
-                            bot.chat(f'bruh you KNOW i cant reach that {block.name} at {block.position}')
-                else:
-                    bot.chat('ion see any doggone trees \'round these parts')
+                mine_nearby_logs()
 
 
-@On(bot, '')
-                
+@On(bot, 'diggingCompleted')
+def handle(block, *args):
+    print(f'block broken')
+
 @On(bot, 'health')
 def handle(*args):
     bot.chat('ouch!!')
 
 @On(bot, 'end')
 def handle(*args):
-  print("Bot ended!", args)
+    print("Bot ended!", args)
+
+def go_to(pos):
+    bot.pathfinder.setGoal(pathfinder.goals.GoalNear(pos.x, pos.y, pos.z, RANGE_GOAL))
+
+
+def find_blocks(block_identifier:str=None, search_area:int=512) -> list:
+    blocks = bot.findBlocks(
+        {
+            'point':bot.position,
+            'matching':lambda block: block.name != 'air',
+            'count': search_area
+        })
+    
+    blocks = [bot.blockAt(pos) 
+              for pos in blocks if block_identifier in bot.blockAt(pos).name]
+    return blocks
+
+def go_to_nearest_log(search_area=512):
+    blocks = find_blocks('log',search_area)
+    
+    # pathfind to nearest log in list
+    if blocks:
+        pos = blocks[0]
+        bot.pathfinder.setGoal(
+            pathfinder.goals.GoalNear(pos.x, pos.y, pos.z, RANGE_GOAL))
+    else:
+        bot.chat('ion see any doggone trees \'round these parts')
+
+def mine_nearby_logs(search_area:int=512):
+    blocks = find_blocks('log')    
+    
+    if blocks:
+        for block in blocks:
+            if bot.canDigBlock(block):
+                bot.dig(block,True)
+                print(block.position)
+        
+        bot.chat('mined all nearby logs!')
+    else:
+        bot.chat('ion see any doggone trees \'round these parts')
