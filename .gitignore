@@ -1,2 +1,4 @@
 Pipfile
 __pycache__/
+.env
+discord_bot.log
