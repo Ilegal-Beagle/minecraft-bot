@@ -1,5 +1,6 @@
 from javascript import require, On
 from pprint import pprint
+import asyncio
 
 mineflayer = require('mineflayer')
 pathfinder = require('mineflayer-pathfinder')
@@ -51,7 +52,6 @@ def handle(*args):
                 return
 
             pos = target.position
-            bot.pathfinder.setMovements(movements)
             go_to(pos)
 
         elif 'go to entity' in message:
@@ -78,18 +78,20 @@ def handle(*args):
                 bot.chat('ion see any doggone trees \'round these parts')
                 return
             
-            pos = blocks[0]['position']
-            bot.pathfinder.setMovements(movements)
-            go_to(pos)
+            go_to(blocks[0]['position'])
 
             # find all reachable blocks at tree and mine it
             blocks = find_blocks(LOGS, 5, 64)
             blocks = [bot.blockAt(block) for block in blocks]
             blocks = [block for block in blocks if bot.canDigBlock(block)]
             for block in blocks:
-                bot.dig(block,True)
-                print(block.position)                
-                bot.chat('mined all nearby logs!')
+                try:
+                    bot.dig(block,True)
+                    print(block.position)
+                except Exception:
+                    bot.chat('couldnt break block in given time. aborting')
+                    bot.stopDigging()
+            bot.chat('mined all nearby logs!')
 
 
 @On(bot, 'end')
@@ -97,7 +99,11 @@ def handle(*args):
     print("Bot ended!", args)
 
 def go_to(pos):
-    bot.pathfinder.setGoal(pathfinder.goals.GoalNear(pos.x, pos.y, pos.z, RANGE_GOAL))
+    try:
+        bot.pathfinder.goto(pathfinder.goals.GoalNear(pos.x, pos.y, pos.z, RANGE_GOAL))
+    except Exception:
+        bot.chat('couldnt make it to destination in time. quitting pathing')
+        bot.pathfinder.stop()
 
 def find_blocks(block_id:list=None, search_area:int=512, block_count:int=512) -> list:
     return bot.findBlocks(
