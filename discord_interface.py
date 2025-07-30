@@ -8,6 +8,8 @@ from discord import FFmpegPCMAudio
 import logging
 from dotenv import load_dotenv
 import os
+import minecraft_interface as mcbot
+from discord.ext import commands
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -15,14 +17,38 @@ token = os.getenv('DISCORD_TOKEN')
 handler = logging.FileHandler(filename='discord_bot.log', encoding='utf-8', mode = 'w')
 logging.basicConfig(level=logging.DEBUG, handlers=[handler])
 
-# bot permissions are included in these intents
-# read Gateway Intents in the discord api docs for more info
-intents = discord.Intents.default()
-intents.message_content = True
-intents.members = True
-intents.voice_states = True
-
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix="!", intents=intents)
 client = discord.Client(intents=intents)
+mc_bot = None
+
+@bot.command()
+async def hello(ctx):
+    await ctx.send("Hello there!")
+
+@bot.command()
+async def join_server(ctx):
+    try:
+        mc_bot = mcbot.Bot('localhost', 3000, 'python', '1.21')
+        await ctx.send(f'joined server successfully!')
+
+    except Exception as e:
+        await ctx.send(f'ERROR: {e}, {type(e)}')
+
+@bot.command()
+async def come(ctx):
+    try:
+        mc_bot.come()
+
+    except AttributeError as e:
+        await ctx.send(f'ERROR: Attribute error. Have you started the bot?')
+    
+    except Exception as e:
+        await ctx.send(f'ERROR: {e}, {type(e)}')
+
+@bot.command()
+async def join_voice(ctx):
+    pass
 
 # handling events
 @client.event
@@ -49,8 +75,6 @@ async def on_message(message):
         else:
             print("no exception and not connected")
 
+bot.run(token, log_handler=handler, log_level=logging.DEBUG)
 client.run(token, log_handler=handler, log_level=logging.DEBUG)
-
-
-
 
