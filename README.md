@@ -32,6 +32,7 @@ Can be found in the mineflayer repo
 
 `pip install javascript`
 `pip install discord`
+`pip install discord.py[voice]`
 `pip install python-dotenv`
 
 3. Install nodejs and npm
