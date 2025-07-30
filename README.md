@@ -3,7 +3,7 @@
 ## CHAT BREAKING TEMP FIX
 Can be found in the mineflayer repo
 > A temporary fix i made is to replace the line at `minecraft-protocol\src\client\chat.js:61:114` with
-> `const acknowledgements = previousMessages.length > 0 ? ['i32', previousMessages.length, 'buffer', Buffer.concat(previousMessages.map(msg => msg.signature || client._signatureCache[msg.id]).> filter(buf => Buffer.isBuffer(buf)))] : ['i32', 0]`
+> `const acknowledgements = previousMessages.length > 0 ? ['i32', previousMessages.length, 'buffer', Buffer.concat(previousMessages.map(msg => msg.signature || client._signatureCache[msg.id]). filter(buf => Buffer.isBuffer(buf)))] : ['i32', 0]`
 
 # Prerequisites
 ## Linux
