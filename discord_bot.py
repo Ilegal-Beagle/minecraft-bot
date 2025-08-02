@@ -1,4 +1,4 @@
-# discord_interface.py
+# discord_bot.py
 
 # this does...
 # 
@@ -52,6 +52,30 @@ class DiscordBot:
         except Exception as e:
             print(f"error in play_sound: {e}")
 
+    # MISC ----------------------------
+
+    # meant for use in the mc_action fucntion only
+    # returns a list like so: [action, sender mc username]
+    def _parse_command(self, cmd_str):
+        # cmd string format: !mc_action action username(optional)
+        cmd = []
+
+        cmd_str = cmd_str.replace(f"{self.db.command_prefix}mc_action ", "")
+
+        sr_actions = self.mc_bot.sender_req_actions
+        sr_action = next((_ for _ in sr_actions if _ in cmd_str), None)
+
+        if sr_action:
+            cmd.append(sr_action)
+            cmd_str.replace(sr_action, "")
+            
+            cmd.append(cmd_str.strip()) # should be only the username at this point
+
+        else:
+            cmd.append(cmd)
+
+        return cmd
+
 
     def setup_events(self, bot):
         # =====================================================================
@@ -77,6 +101,7 @@ class DiscordBot:
             except Exception as e:
                 print(f"Error joining {voice_channel.name}: {e}")
 
+
         @bot.command(pass_context = True)
         async def leave_voice(ctx):
 
@@ -88,7 +113,6 @@ class DiscordBot:
             await ctx.send("dippin' homie")
 
         
-
         # MINECRAFT SERVER ----------------------------------------------------
 
         # @bot.command(pass_context = True)
@@ -104,54 +128,42 @@ class DiscordBot:
         #     except Exception as e:
         #         await ctx.send(f"ERROR in function 'join_server': {e}, {type(e)}")
 
+
         # mc_action executes the mc_bot action by using its dictionary of 
         # keys and function values
         @bot.command()
         async def mc_action(ctx):
-            msg = ctx.message.content
-            msg = ctx.message.content.split(' ', 1)[1:]
+            command = self._parse_command(ctx.message.content)
 
-            if not msg:
-                await ctx.send(f"usage: {self.db.command_prefix}mc_action 'action' "
-                               f"'username'\nor: {self.db.command_prefix}mc_action "
-                                "'action'")
-            else:
-                msg = str(msg)
-
-            # parse command for sender required action
-            sr_action = None 
-            sr_action = next((_ for _ in self.mc_bot.sender_req_actions if _ in msg), None)
+            if not command:
+                await ctx.send(f"usage: {self.db.command_prefix}mc_action "
+                    f"'action' 'username'\nor: {self.db.command_prefix}"
+                    "mc_action 'action'")
+                return
             
-            if sr_action:
-                msg = msg.replace(sr_action, "").strip("[]' ")
-                
-                # if user did not specify sender for sender required action
-                if not msg:
-                    await ctx.send(f"usage: {self.db.command_prefix}mc_action {sr_action} "
-                                    "'username'")
-                    return
-                
-                # do the sender required action
-                else:
+            if command[0] not in self.mc_bot.actions:
+                await ctx.send(f"action '{command[0]}' does not exist")
+                return
+
+            # if command requires sender
+            if len(command) == 2:
+                if command[1]:
                     try:
-                        # msg should be the username
-                        self.mc_bot.actions[sr_action](msg)
+                        self.mc_bot.actions[command[0]](command[1])
                     except Exception as e:
                         print(f"error: {e}")
+
+                else:
+                    await ctx.send(f"usage: {self.db.command_prefix}mc_action "
+                                   f"{command[0]} 'username'")
+                    return
             
             else:
-                msg = msg.strip("[]' ")
+                try:
+                    self.mc_bot.actions[command[0]]()
+                except Exception as e:
+                    print(f"error: {e}")
 
-                if msg not in self.mc_bot.actions:
-                    await ctx.send(f"action '{msg}' does not exist")
-                    return
-                
-                else:
-                    try:
-                        self.mc_bot.actions[msg]()
-                    except Exception as e:
-                        print(f"error: {e}")
-            
 
         # =====================================================================
         # VOICE CHAT EVENTS
