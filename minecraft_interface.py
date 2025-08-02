@@ -49,10 +49,11 @@ class Bot:
         })
         self.mc_data = require('minecraft-data')(self.bot.version) # used for getting ID of blocks
         self.LOGS = [self.mc_data.blocksByName[log].id for log in self.LOG_NAMES] # gets log IDs
-        self.ORES = [self.mc_data.blocksByName[ore].id for ore in self.ORE_NAMES] # gets log IDs
+        self.ORES = [self.mc_data.blocksByName[ore].id for ore in self.ORE_NAMES] # gets ore IDs
         self.bot.loadPlugin(pathfinder.pathfinder)
         self.movements = pathfinder.Movements(self.bot) # sets the type of movements pathing can do
         self.wandering = False # flag for when bot is in wandering state
+        self.sender_req_actions = ['come', 'look at me'] # actions that require a sender argument
         
         # Dict that defines keywords to find in messages and the function those words should execute
         self.actions = {
