@@ -37,9 +37,9 @@ class Bot:
         'deepslate_redstone_ore',
         
     ]
-    AIR_ID = 0
+    AIR_ID = 1
 
-    def __init__(self, host:str, port:int, username:str, version:str, disc_bot: db.DiscordBot):
+    def __init__(self, host:str, port:int, username:str, version:str, disc_bot:db.DiscordBot=None):
         self.bot = mineflayer.createBot({
             'host': host,
             'port': port,
@@ -111,7 +111,7 @@ class Bot:
                     try:
                         @AsyncTask(start=True)
                         def run(task):
-                            self.wandering = not self.wandering if keyword == 'wander loop' else self.wandering
+                            self.wandering = not self.wandering if keyword == 'wander' else self.wandering
                             function(sender) if keyword in self.sender_req_actions else function()
 
                     except Exception as e:
@@ -156,6 +156,8 @@ class Bot:
             return
         
         self.go_to(blocks[0]['position']) # go to the block
+
+        self.bot.waitForTicks(10)
 
         # find all reachable blocks at tree and mine it
         blocks = list(map(lambda block: self.bot.blockAt(block), self.find_blocks(self.LOGS, 5, 64)))
