@@ -3,6 +3,4 @@ __pycache__/
 .env
 discord_bot.log
 node_modules/
-package-lock.json
-package.json
-ignoreme
+Pipfile.lock
