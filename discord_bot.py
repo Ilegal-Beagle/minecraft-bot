@@ -40,9 +40,6 @@ class DiscordBot:
 
         except Exception as e:
             print(f"error in play_sound: {e}")
-
-    def _process_speech_text(self, text):
-       pass
         
     # INTERNAL ----------------------------------
 
@@ -67,7 +64,6 @@ class DiscordBot:
             cmd.append(cmd_str)
 
         return cmd
-
 
     def setup_events(self, bot):
 
@@ -115,6 +111,25 @@ class DiscordBot:
             await ctx.send("dippin' homie")
 
 
+        @bot.command
+        async def _voice_echo(channel, message):
+
+            if not channel.members:
+                return
+            
+            voice_client = discord.utils.get(bot.voice_clients, guild=channel.guild)
+            if not voice_client:
+                return
+            
+            try:
+                self.tts_engine.save_to_file(message, "sounds/curr_tts.wav")
+                self.tts_engine.runAndWait()
+                self.vc_play_sound(voice_client, "sounds/curr_tts.wav")
+            except Exception as e:
+                print(f"Error in say_this: {e}")
+                return
+
+
         @bot.command()
         async def say_this(ctx):
 
@@ -122,13 +137,12 @@ class DiscordBot:
             msg = ctx.message.content
             msg = msg.replace(f"{self.db.command_prefix}say_this", "")
 
-            print(f"second print!{msg}")
             if not msg:
                 await ctx.send(f"usage: {self.db.command_prefix}say 'message'")
                 return
             
             voice_client = discord.utils.get(ctx.bot.voice_clients, guild=ctx.guild)
-            print(f"helllo vc: {voice_client}")
+            
             if not voice_client.is_connected():
                 await ctx.send("homedog im not in a voice chat bro")
                 return
@@ -140,6 +154,23 @@ class DiscordBot:
             except Exception as e:
                 print(f"Error in say_this: {e}")
                 return
+            
+
+        @bot.command()
+        async def tell_this(ctx):
+            if not self.mc_bot:
+                await ctx.send("the minecraft bot isn't active")
+                return
+            
+            msg = ctx.message.content.replace(f"{self.db.command_prefix}"
+                                              "tell_this", "").strip()
+            
+            print(f"tell_this msg: {msg}")
+            if msg:
+                self.mc_bot.send(msg)
+
+            else:
+                print(f"Usage: !tell_this 'text'")
 
         # MINECRAFT BOT -------------------------------------------------------
 
@@ -150,9 +181,8 @@ class DiscordBot:
                 return
 
             try:
-                self.mc_bot = mcbot.Bot('localhost', '3000', 'potato', '1.21', self)
+                self.mc_bot = mcbot.Bot('192.168.0.9', '3000', 'potato', '1.21', self)
                 await ctx.send(f'joined server successfully! ')
-                
 
             except Exception as e:
                 await ctx.send(f"ERROR in function 'join_server': {e}, {type(e)}")
@@ -207,7 +237,6 @@ class DiscordBot:
                     self.mc_bot.actions[command[0].strip()]()
                 except Exception as e:
                     print(f"error: {e}")
-
 
         # =====================================================================
         # VOICE CHAT EVENTS
