@@ -23,23 +23,16 @@ Can be found in the mineflayer repo
 
 `npm install mineflayer`
 
-## macOS
-1. Install homebrew if you haven't already
+5. install voice dependencies for tts
 
-`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+`sudo apt-get install espeak-ng`
 
-2. Install python modules
+6. Install python modules
 
 `pip install javascript`
 `pip install discord`
 `pip install discord.py[voice]`
 `pip install python-dotenv`
+`pip install pyttsx3`
 
-3. Install nodejs and npm
-
-`brew install node`
-
-4. Install mineflayer package
-
-`npm install mineflayer` 
 

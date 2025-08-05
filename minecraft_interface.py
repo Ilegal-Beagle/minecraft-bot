@@ -1,6 +1,7 @@
 from javascript import require, On, AsyncTask
 from pprint import pprint
 import asyncio, random
+import discord_bot as db
 
 mineflayer = require('mineflayer')
 pathfinder = require('mineflayer-pathfinder')
@@ -38,7 +39,7 @@ class Bot:
     ]
     AIR_ID = 0
 
-    def __init__(self, host:str, port:int, username:str, version:str):
+    def __init__(self, host:str, port:int, username:str, version:str, disc_bot: db.DiscordBot):
         self.bot = mineflayer.createBot({
             'host': host,
             'port': port,
@@ -47,6 +48,7 @@ class Bot:
             'hideErrors': True,
             'version':version,
         })
+        self.disc_bot = disc_bot
         self.mc_data = require('minecraft-data')(self.bot.version) # used for getting ID of blocks
         self.LOGS = [self.mc_data.blocksByName[log].id for log in self.LOG_NAMES] # gets log IDs
         self.ORES = [self.mc_data.blocksByName[ore].id for ore in self.ORE_NAMES] # gets ore IDs
@@ -110,7 +112,8 @@ class Bot:
                         @AsyncTask(start=True)
                         def run(task):
                             self.wandering = not self.wandering if keyword == 'wander loop' else self.wandering
-                            function(sender) if keyword in ['come', 'look at me'] else function()
+                            function(sender) if keyword in self.sender_req_actions else function()
+
                     except Exception as e:
                         print(f'ERROR: {e}, {type(e)}')
 
@@ -122,6 +125,7 @@ class Bot:
 
     def come_to_sender(self, sender):
         # get the entity obj. of sender
+        print(sender)
         player = self.bot.players[sender].entity
 
         if not player: # no target found
