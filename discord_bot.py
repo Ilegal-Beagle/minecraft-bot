@@ -174,13 +174,13 @@ class DiscordBot:
         # MINECRAFT BOT -------------------------------------------------------
 
         @bot.command()
-        async def join_server(ctx):
+        async def join_server(ctx, ip, port, username, version):
             if self.mc_bot:
                 await ctx.send("minecraft bot is already active")
                 return
 
             try:
-                self.mc_bot = mcbot.Bot('192.168.0.9', '3000', 'potato', '1.21', self)
+                self.mc_bot = mcbot.Bot(ip, port, username, version, self)
                 await ctx.send(f'joined server successfully! ')
 
             except Exception as e:
@@ -233,6 +233,7 @@ class DiscordBot:
             
             else:
                 try:
+                    self.mc_bot.wandering = not self.mc_bot.wandering if command[0].strip() == 'wander' else self.mc_bot.wandering
                     self.mc_bot.actions[command[0].strip()]()
                 except Exception as e:
                     print(f"error: {e}")
