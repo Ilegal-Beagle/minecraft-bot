@@ -11,7 +11,6 @@ import pyttsx3
 import logging
 from dotenv import load_dotenv
 import os
-import subprocess
 
 import minecraft_interface as mcbot
 
