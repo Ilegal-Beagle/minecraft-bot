@@ -25,6 +25,7 @@ COPY requirements.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+COPY patches/chat.js node_modules/minecraft_protocol/src/client/
 COPY . .
 
-CMD ["python3", "minecraft_interface.py"]
+CMD ["python3", "discord_bot.py"]
