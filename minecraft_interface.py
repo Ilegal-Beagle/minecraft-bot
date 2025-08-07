@@ -39,7 +39,7 @@ class Bot:
     ]
     AIR_ID = 1
 
-    def __init__(self, host:str, port:int, username:str, version:str, disc_bot:db.DiscordBot=None):
+    def __init__(self, host:str, port:int, username:str, version:str, disc_bot=None):
         self.bot = mineflayer.createBot({
             'host': host,
             'port': port,

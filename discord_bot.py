@@ -29,6 +29,8 @@ class DiscordBot:
         self.tts_engine.setProperty('rate', 150)
 
         self.setup_events(self.db)
+        handler = logging.FileHandler(filename='discord_bot.log', encoding='utf-8', mode = 'w')
+        logging.basicConfig(level=logging.DEBUG, handlers=[handler])
         self.db.run(token, log_handler=handler, log_level=logging.DEBUG)
 
     # AUDIO HANDLING ----------------------------
