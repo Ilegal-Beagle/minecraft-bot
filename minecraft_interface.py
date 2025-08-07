@@ -1,5 +1,4 @@
 from javascript import require, On, AsyncTask
-from pprint import pprint
 import asyncio, random
 import discord_bot as db
 
